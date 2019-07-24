@@ -1,15 +1,16 @@
 // 1. Initialize Firebase
 var firebaseConfig = {
-    apiKey: "AIzaSyBF_2-PgHfdWJhwvMN6XjNIjYwa-Vnlq1w",
-    authDomain: "train-schedular-962b0.firebaseapp.com",
-    databaseURL: "https://train-schedular-962b0.firebaseio.com",
-    projectId: "train-schedular-962b0",
+    apiKey: "AIzaSyAvbcWKBcuAyiDvXVbE6iPi22bnrwsw_vQ",
+    authDomain: "trainschedularv2.firebaseapp.com",
+    databaseURL: "https://trainschedularv2.firebaseio.com",
+    projectId: "trainschedularv2",
     storageBucket: "",
-    messagingSenderId: "1063934526222",
-    appId: "1:1063934526222:web:2fe03650263124a7"
+    messagingSenderId: "378938428206",
+    appId: "1:378938428206:web:f0ada61b18016d47"
 };
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
+
 
 var database = firebase.database();
 
@@ -20,8 +21,13 @@ $("#add-train-btn").on("click", function (event) {
     // Grabs user input
     var trainName = $("#train-name-input").val().trim();
     var trainDestination = $("#destination-input").val().trim();
-    var trainStart = moment($("#start-input").val().trim(), "HH:mm").format("X");
+    var trainStart = $("#start-input").val().trim();
     var trainFrequency = $("#frequency-input").val().trim();
+
+    //console.log(trainName)
+    //console.log(trainDestination)
+    //console.log(trainStart)
+    //console.log(trainFrequency)
 
     // Creates local "temporary" object for holding train data
     var newTrain = {
@@ -31,16 +37,17 @@ $("#add-train-btn").on("click", function (event) {
         frequency: trainFrequency
     };
 
+
     // Uploads train data to the database
     database.ref().push(newTrain);
 
     // Logs everything to console
-    console.log(newTrain.name);
-    console.log(newTrain.destination);
-    console.log(newTrain.trainStart);
-    console.log(newTrain.trainFrequency);
+    //console.log(newTrain.name);
+    //console.log(newTrain.destination);
+    //console.log(newTrain.trainStart);
+    //console.log(newTrain.trainFrequency);
 
-    alert("Employee successfully added");
+    alert("Train successfully added");
 
     // Clears all of the text-boxes
     $("#train-name-input").val("");
@@ -49,9 +56,9 @@ $("#add-train-btn").on("click", function (event) {
     $("#frequency-input").val("");
 });
 
-// 3. Create Firebase event for adding employee to the database and a row in the html when a user adds an entry
+// 3. Create Firebase event for adding train employee to the database and a row in the html when a user adds an entry
 database.ref().on("child_added", function (childSnapshot) {
-    console.log(childSnapshot.val());
+    //console.log(childSnapshot.val());
 
     // Store everything into a variable.
     var trainName = childSnapshot.val().name;
@@ -60,30 +67,31 @@ database.ref().on("child_added", function (childSnapshot) {
     var trainFrequency = childSnapshot.val().frequency;
 
     // Employee Info
-    console.log(trainName);
-    console.log(trainDestination);
-    console.log(trainStart);
-    console.log(trainFrequency);
+    //console.log(trainName);
+    //console.log(trainDestination);
+    //console.log(trainStart);
+    //console.log(trainFrequency);
 
-    // Prettify the train start
-    var trainStartPretty = moment.unix(trainStart).format("HH/mm");
+    // fix the train start
+    // var trainStartFixed = moment(trainStart, "hh:mm").format("hh:mm")
+    // console.log(trainStartFixed)
 
     // Calculate the next arrival using hardcore math
-    // To calculate the months worked
-    //var empMonths = moment().diff(moment(empStart, "X"), "months");
-    //console.log(empMonths);
+    var nextArrival = moment().diff(moment(trainStart, "X"), "hh:mm");
+    console.log(moment.unix(nextArrival).format('hh:mm'));
 
     // Calculate the minutes away
-    var empBilled = empMonths * empRate;
-    console.log(empBilled);
+    var minutesAway = 0;
+    //var minutesAway = nextArrival - ;
+    //console.log(minutesAway);
 
     // Create the new row
     var newRow = $("<tr>").append(
         $("<td>").text(trainName),
         $("<td>").text(trainDestination),
-        $("<td>").text(trainStartPretty),
-        $("<td>").text(empMonths),
-        $("<td>").text(empRate),
+        $("<td>").text(trainFrequency),
+        $("<td>").text(nextArrival),
+        $("<td>").text(minutesAway),
     );
 
     // Append the new row to the table
